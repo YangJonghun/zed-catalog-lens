@@ -1,0 +1,21 @@
+[package]
+name = "zed-catalog-lens"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+rust-version = "1.98"
+description = "Zed extension: show resolved versions for pnpm / yarn / bun catalog: dependencies."
+repository = ""
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[workspace]
+members = ["lsp"]
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

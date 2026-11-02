@@ -1,0 +1,15 @@
+[package]
+name = "zed-catalog-lens-lsp"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+rust-version = "1.98"
+description = "Language server that resolves pnpm / yarn / bun catalog: dependency versions."
+publish = false
+
+[[bin]]
+name = "zed-catalog-lens-lsp"
+path = "src/main.rs"
+
+[dependencies]
+tokio = "1.53.1"
