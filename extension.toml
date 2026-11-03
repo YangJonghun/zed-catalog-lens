@@ -1,0 +1,11 @@
+id = "catalog-lens-lsp"
+name = "Catalog Lens"
+version = "0.0.0"
+schema_version = 1
+authors = ["jonghun"]
+description = "Show the version a pnpm / Yarn / Bun catalog: dependency resolves to."
+repository = "https://github.com/YangJonghun/zed-catalog-lens"
+
+[language_servers.catalog-lens]
+name = "Catalog Lens"
+languages = ["JSON"]
