@@ -1,15 +1,19 @@
 [package]
 name = "zed-catalog-lens"
-version = "0.1.0"
+version = "0.0.0"
 edition = "2024"
 license = "MIT"
 rust-version = "1.98"
-description = "Zed extension: show resolved versions for pnpm / yarn / bun catalog: dependencies."
-repository = ""
+description = "Zed extension: show resolved versions for pnpm / Yarn / Bun catalog: dependencies."
+repository = "https://github.com/YangJonghun/zed-catalog-lens"
 publish = false
 
 [lib]
 crate-type = ["cdylib"]
+
+[dependencies]
+semver = "1"
+zed_extension_api = "0.7.0"
 
 [workspace]
 members = ["lsp"]
