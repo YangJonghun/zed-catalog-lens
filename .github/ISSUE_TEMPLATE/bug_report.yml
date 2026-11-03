@@ -1,0 +1,51 @@
+name: Bug report
+description: Catalog Lens shows a wrong version, a wrong warning, or nothing at all.
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+    validations:
+      required: true
+  - type: dropdown
+    id: package-manager
+    attributes:
+      label: Package manager
+      options:
+        - pnpm
+        - Yarn
+        - Bun
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: "Catalog Lens (Extensions panel), Zed (`zed: about`), the package manager, and your OS."
+      placeholder: Catalog Lens 0.1.0, Zed 0.210.0, pnpm 10.18.0, macOS 26 arm64
+    validations:
+      required: true
+  - type: textarea
+    id: catalog
+    attributes:
+      label: Catalog file
+      description: The relevant part of `pnpm-workspace.yaml`, `.yarnrc.yml`, or the Bun root `package.json`.
+      render: yaml
+    validations:
+      required: true
+  - type: textarea
+    id: package-json
+    attributes:
+      label: package.json
+      description: The dependency lines that show the problem.
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: LSP log
+      description: Open Zed's **LSP Logs** view and select `catalog-lens`.
+      render: text
