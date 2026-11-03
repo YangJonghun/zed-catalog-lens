@@ -1,0 +1,13 @@
+{
+  "name": "app",
+  "dependencies": {
+    "react": "catalog:react18",
+    "lodash": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:"
+  },
+  "resolutions": {
+    "**/react-dom": "catalog:react18"
+  }
+}

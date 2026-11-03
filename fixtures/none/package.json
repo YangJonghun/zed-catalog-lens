@@ -1,0 +1,6 @@
+{
+  "name": "nowhere",
+  "dependencies": {
+    "react": "catalog:"
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "inlay_hints": { "enabled": true },
+  "lsp_document_colors": "background"
+}

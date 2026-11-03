@@ -1,0 +1,20 @@
+{
+  "name": "app",
+  "description": "카탈로그 렌즈 🔭 fixture",
+  "dependencies": {
+    "react": "catalog:",
+    "react-dom": "catalog:react18",
+    "lodash": "catalog:",
+    "missing-pkg": "catalog:",
+    "react-router": "catalog:react17",
+    "blank-name": "catalog: "
+  },
+  "devDependencies": {
+    "@types/react": "catalog:react18"
+  },
+  "pnpm": {
+    "overrides": {
+      "foo>react@^17": "catalog:react19"
+    }
+  }
+}
