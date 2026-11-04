@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/YangJonghun/zed-catalog-lens/compare/v0.1.0...v0.2.0) (2026-11-04)
+
+
+### Features
+
+* let lsp.catalog-lens.binary.path pick the server ([4cd36a9](https://github.com/YangJonghun/zed-catalog-lens/commit/4cd36a9369bbf0b8c7da48483f2e92464c27b1e4))
+
 ## 0.1.0 (2026-11-04)
 
 
