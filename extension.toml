@@ -1,6 +1,6 @@
 id = "catalog-lens-lsp"
 name = "Catalog Lens"
-version = "0.0.0"
+version = "0.1.0"
 schema_version = 1
 authors = ["jonghun"]
 description = "Show the version a pnpm / Yarn / Bun catalog: dependency resolves to."
