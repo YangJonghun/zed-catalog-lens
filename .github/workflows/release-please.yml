@@ -1,0 +1,93 @@
+name: Release Please
+
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+concurrency:
+  group: release-please
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    uses: ./.github/workflows/verify.yml
+    permissions:
+      contents: read
+
+  release-please:
+    needs: verify
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - id: release
+        uses: googleapis/release-please-action@v5
+        with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
+
+  binaries:
+    name: Build ${{ matrix.slug }}
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - slug: darwin-arm64
+            runner: macos-15
+            target: aarch64-apple-darwin
+          - slug: darwin-amd64
+            runner: macos-15-intel
+            target: x86_64-apple-darwin
+          - slug: linux-amd64
+            runner: ubuntu-24.04
+            target: x86_64-unknown-linux-musl
+          - slug: linux-arm64
+            runner: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-musl
+    env:
+      ARCHIVE: catalog-lens-${{ matrix.slug }}.tar.gz
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.release-please.outputs.tag_name }}
+          persist-credentials: false
+      - name: Install musl tools
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y musl-tools
+      - run: rustup target add ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+      - run: cargo build --release --locked -p catalog-lens --target ${{ matrix.target }}
+      - run: tar -czf "$ARCHIVE" -C "target/${{ matrix.target }}/release" catalog-lens
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.slug }}
+          path: ${{ env.ARCHIVE }}
+          if-no-files-found: error
+
+  upload:
+    needs: [release-please, binaries]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: dist
+          merge-multiple: true
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: gh release upload "$TAG" dist/catalog-lens-*.tar.gz --repo "$GITHUB_REPOSITORY"
