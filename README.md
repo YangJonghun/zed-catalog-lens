@@ -94,11 +94,12 @@ Put them under `lsp.catalog-lens.settings` in your Zed settings. They apply as s
 - `languages.JSON.inlay_hints.enabled` turns on inlay hints for JSON files only.
 - `lsp_document_colors` picks how catalog colors are drawn.
 - The theme key `editor.code_lens.foreground` sets the code lens text color.
+- `lsp.catalog-lens.binary.path` runs the `catalog-lens` server at that path instead of the one on `PATH` or the downloaded one. `binary.arguments` and `binary.env` go with it.
 
 ## Troubleshooting
 
 - **No versions appear.** Check that Zed's `inlay_hints.enabled` is on. For code lenses, set `code_lens` to `"on"`.
-- **The language server fails to download.** Check that you can reach github.com, then restart Zed. If it still fails, download the `catalog-lens-<os>-<arch>.tar.gz` for your platform from the [releases page](https://github.com/YangJonghun/zed-catalog-lens/releases) and put the `catalog-lens` binary on your `PATH`. The extension uses a server on `PATH` instead of downloading one.
+- **The language server fails to download.** Check that you can reach github.com, then restart Zed. If it still fails, download the `catalog-lens-<os>-<arch>.tar.gz` for your platform from the [releases page](https://github.com/YangJonghun/zed-catalog-lens/releases) and put the `catalog-lens` binary on your `PATH`, or set `lsp.catalog-lens.binary.path` to it. The extension then uses that server instead of downloading one.
 - **You need more detail.** Open Zed's **LSP Logs** view and select `catalog-lens`.
 
 If the problem persists, [open an issue](https://github.com/YangJonghun/zed-catalog-lens/issues) with your package manager, the relevant part of your catalog file, and the LSP log.

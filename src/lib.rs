@@ -4,14 +4,15 @@ use semver::Version;
 
 use zed_extension_api::{
     self as zed, Architecture, Command, DownloadedFileType, GithubReleaseOptions, LanguageServerId,
-    LanguageServerInstallationStatus, Os, Result, Worktree, serde_json, settings::LspSettings,
+    LanguageServerInstallationStatus, Os, Result, Worktree, serde_json,
+    settings::{CommandSettings, LspSettings},
 };
 
 const BINARY: &str = "catalog-lens";
 const REPO: &str = "YangJonghun/zed-catalog-lens";
 const INSTALL_HINT: &str = "catalog-lens could not be downloaded from \
-https://github.com/YangJonghun/zed-catalog-lens/releases. Putting a catalog-lens binary on PATH \
-also works.";
+https://github.com/YangJonghun/zed-catalog-lens/releases. Putting a catalog-lens binary on PATH, \
+or setting lsp.catalog-lens.binary.path, also works.";
 
 fn platform_slug(os: Os, arch: Architecture) -> Result<&'static str> {
     match (os, arch) {
@@ -155,6 +156,15 @@ impl CatalogLens {
     }
 }
 
+fn configured_command(binary: Option<CommandSettings>) -> Option<Command> {
+    let binary = binary?;
+    Some(Command {
+        command: binary.path?,
+        args: binary.arguments.unwrap_or_default(),
+        env: binary.env.unwrap_or_default().into_iter().collect(),
+    })
+}
+
 impl zed::Extension for CatalogLens {
     fn new() -> Self {
         Self { downloaded: None }
@@ -165,6 +175,12 @@ impl zed::Extension for CatalogLens {
         id: &LanguageServerId,
         worktree: &Worktree,
     ) -> Result<Command> {
+        let binary = LspSettings::for_worktree(id.as_ref(), worktree)
+            .ok()
+            .and_then(|settings| settings.binary);
+        if let Some(command) = configured_command(binary) {
+            return Ok(command);
+        }
         Ok(Command {
             command: self.binary_path(id, worktree)?,
             args: Vec::new(),
@@ -313,9 +329,33 @@ mod tests {
     }
 
     #[test]
+    fn configured_binary_path_overrides_the_server_lookup() {
+        let configured = configured_command(Some(CommandSettings {
+            path: Some("/opt/catalog-lens".into()),
+            arguments: Some(vec!["--verbose".into()]),
+            env: Some([("CATALOG_LENS_LOG".into(), "debug".into())].into()),
+        }))
+        .unwrap();
+        assert_eq!(configured.command, "/opt/catalog-lens");
+        assert_eq!(configured.args, vec!["--verbose".to_string()]);
+        assert_eq!(
+            configured.env,
+            vec![("CATALOG_LENS_LOG".to_string(), "debug".to_string())]
+        );
+        let without_path = CommandSettings {
+            path: None,
+            arguments: Some(vec!["--verbose".into()]),
+            env: None,
+        };
+        assert!(configured_command(Some(without_path)).is_none());
+        assert!(configured_command(None).is_none());
+    }
+
+    #[test]
     fn install_hint_points_at_releases_and_path() {
         assert!(INSTALL_HINT.contains("https://github.com/YangJonghun/zed-catalog-lens/releases"));
         assert!(INSTALL_HINT.contains("PATH"));
+        assert!(INSTALL_HINT.contains("lsp.catalog-lens.binary.path"));
     }
 
     #[test]
